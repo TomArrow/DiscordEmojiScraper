@@ -4,6 +4,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 16.0.32901.82
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscordEmojiScraper", "DiscordEmojiScraper\DiscordEmojiScraper.csproj", "{F795E31E-E835-484B-9350-B15BEE4099C6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{22062B37-1544-4C81-99A4-15CB6907C6C6} = {22062B37-1544-4C81-99A4-15CB6907C6C6}
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DSharpPlus", "DSharpPlus\DSharpPlus\DSharpPlus.csproj", "{22062B37-1544-4C81-99A4-15CB6907C6C6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +20,10 @@ Global
 		{F795E31E-E835-484B-9350-B15BEE4099C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F795E31E-E835-484B-9350-B15BEE4099C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F795E31E-E835-484B-9350-B15BEE4099C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{22062B37-1544-4C81-99A4-15CB6907C6C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22062B37-1544-4C81-99A4-15CB6907C6C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22062B37-1544-4C81-99A4-15CB6907C6C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22062B37-1544-4C81-99A4-15CB6907C6C6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

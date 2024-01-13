@@ -1,7 +1,9 @@
 ﻿using DSharpPlus;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace DiscordEmojiScraper
@@ -9,7 +11,7 @@ namespace DiscordEmojiScraper
     class Program
     {
         private static DiscordClient discordClient = null;
-        static async void Main(string[] args)
+        static void Main(string[] args)
         {
             if (!File.Exists("token.txt"))
             {
@@ -18,7 +20,13 @@ namespace DiscordEmojiScraper
                 return;
             }
 
-            await doall();
+            Task.Run(() => { 
+                doall();
+                while (true)
+                {
+                    System.Threading.Thread.Sleep(1000);
+                }
+            });
 
 
             Console.ReadKey();
@@ -27,6 +35,8 @@ namespace DiscordEmojiScraper
 
         private static async Task doall()
         {
+            StringBuilder sb = new StringBuilder();
+
             int tokenTypeInt = 0;
             TokenType tokenType = (TokenType)tokenTypeInt;
 
@@ -51,16 +61,33 @@ namespace DiscordEmojiScraper
             await connectTask;
             Console.WriteLine("Connected.");
 
-            foreach(var kvp in discordClient.Guilds)
+            HashSet<string> emojiNames = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
+
+            var user = await discordClient.GetUserAsync(discordClient.CurrentUser.Id);
+
+            ulong[] userGuilds = await discordClient.GetCurrentUserGuildsAsync();
+
+            //var guilds = discordClient.Guilds;
+
+            foreach (var guildId in userGuilds)
             {
-                ulong guildId = kvp.Key;
-                var guild = kvp.Value;
+                var guild = await discordClient.GetGuildAsync(guildId);
                 foreach(var emoji in guild.Emojis)
                 {
-                    string emojiFilename = MakeValidFileName(emoji.GetDiscordName());
-                    string url = emoji.
+                    string emojiFilenameBase = MakeValidFileName(emoji.Name);
+                    string emojiFilename = emojiFilenameBase;
+                    int i = 2;
+                    while (emojiNames.Contains(emojiFilename))
+                    {
+                        emojiFilename = $"{emojiFilenameBase}-{i++}";
+                    }
+                    emojiNames.Add(emojiFilename);
+                    string url = emoji.Url;
+                    emojiFilename = Path.Combine("emojis",$"{emojiFilename}{Path.GetExtension(url)}");
+                    sb.Append($"wget -c --retry-connrefused --tries=0 --timeout=500 -O \"{emojiFilename}\" \"{url}\"\n");
                 }
             }
+            File.WriteAllText("getEmojis.sh", sb.ToString());
         }
 
         // from: https://stackoverflow.com/a/847251
@@ -70,15 +97,6 @@ namespace DiscordEmojiScraper
             string invalidRegStr = string.Format(@"([{0}]*\.+$)|([{0}]+)", invalidChars);
 
             return System.Text.RegularExpressions.Regex.Replace(name, invalidRegStr, "_");
-        }
-
-        public static string getUrl(this DSharpPlus.Entities.DiscordEmoji me)
-        {
-            return me.Id == 0
-                ? throw new InvalidOperationException("Cannot get URL of unicode emojis.")
-                : me.
-                ? $"https://cdn.discordapp.com/emojis/{me.Id.ToString(CultureInfo.InvariantCulture)}.gif"
-                : $"https://cdn.discordapp.com/emojis/{me.Id.ToString(CultureInfo.InvariantCulture)}.png";
         }
 
 
